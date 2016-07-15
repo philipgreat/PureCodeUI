@@ -11,11 +11,35 @@ import UIKit
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
+    //var window: UIWindow? = UIWindow(frame: UIScreen.mainScreen().bounds)
     var window: UIWindow?
 
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        
+        self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
+        
+        let nav1 = UINavigationController()
+        let first = ViewController(nibName: nil, bundle: nil)
+        nav1.viewControllers = [first]
+        nav1.title = "HOME"
+        //nav1.tabBarItem.image=UIImage(named: String)
+        
+        let second = SecondViewController(nibName: nil, bundle: nil)
+        let nav2 = UINavigationController()
+        nav2.title = "CATE"
+        nav2.viewControllers = [second]
+        
+        let tabs = UITabBarController()
+        tabs.viewControllers = [nav1, nav2]
+        
+        
+        
+        
+        self.window!.rootViewController = tabs;
+        self.window?.makeKeyAndVisible();
+
         return true
     }
 
