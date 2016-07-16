@@ -27,12 +27,12 @@ class LineItemCell: UITableViewCell {
         //With code, this method will be called
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        dynamicLabel = UILabel(frame: CGRectMake(10, 10, 100.0, 40))
+        dynamicLabel = UILabel(frame: CGRectMake(10, 10, 200, 40))
         dynamicLabel!.textColor = UIColor.blackColor()
         //dynamicLabel!.font = //set font here
         
         addSubview(dynamicLabel)
-        print("method called")
+        NSLog("method called")
     }
     
     override func awakeFromNib() {

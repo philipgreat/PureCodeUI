@@ -11,7 +11,7 @@ import UIKit
 class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate {
 
     var tableView:UITableView?
-    
+    var items:[[String: AnyObject]]?
     
     internal func addTable()
     {
@@ -32,8 +32,9 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
     
         
         
-        let requestURL: NSURL = NSURL(string: "http://www.learnswiftonline.com/Samples/subway.json")!
+        let requestURL: NSURL = NSURL(string: "http://localhost:8080/naf/service/loadOne/")!
         let urlRequest: NSMutableURLRequest = NSMutableURLRequest(URL: requestURL)
+        urlRequest.addValue("text/json", forHTTPHeaderField: "Accept")
         let session = NSURLSession.sharedSession()
         let task = session.dataTaskWithRequest(urlRequest) {
             (data, response, error) -> Void in
@@ -42,7 +43,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
             let statusCode = httpResponse.statusCode
             
             if (statusCode == 200) {
-                print("Everyone is fine, file downloaded successfully.")
+                print("Everyone is fine, file downloaded successfully. with data \(data)")
             }
             
             
@@ -51,15 +52,20 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
                 do{
                     
                     let json = try NSJSONSerialization.JSONObjectWithData(data!, options:.AllowFragments)
-                    
-                    if let stations = json["stations"] as? [[String: AnyObject]] {
+                    //print("with json: ", json)
+                    if let lineItemList = json["lineItemList"] as? [[String: AnyObject]] {
+                       
                         
-                        for station in stations {
+                        self.items = lineItemList
+                        
+                        for lineItem in lineItemList {
                             
-                            if let name = station["stationName"] as? String {
-                                
-                                if let year = station["buildYear"] as? String {
-                                    print("name and year = ",name,year)
+                            if let skuId = lineItem["skuId"] as? String {
+                                 print("with line item json: ", skuId);
+                                if let quantity = lineItem["quantity"] as? Int {
+                                    // the tyoe can not be automatiically transfer, it must match the original ones.
+                                    //NSLog("with line item quantity: ", quantity);
+                                    NSLog("id and quantity = %@   %d",skuId,quantity)
                                 }
                                 
                             }
@@ -68,11 +74,17 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
                     }
                     
                 }catch {
-                    print("Error with Json: \(error)")
+                    NSLog("Error with Json: \(error)")
                 }
+                //self.
                 
             }
-            
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                //must be  in UI thread to load the data, otherwise, some time not working before click some cell
+                self.tableView?.reloadData()
+            })
+            //self.tableView?.reloadData()
+            //NSLog("trying to reload the data")
         }
         
         task.resume()
@@ -92,16 +104,22 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
      func numberOfSectionsInTableView(_tableView: UITableView) -> Int{
         
         
-        print("numberOfSectionsInTableView called")
+        NSLog("numberOfSectionsInTableView called")
         
-        return 20
+        //NSLog( "calling: %s", __PRETTY_FUNCTION__ );
+        
+        if items == nil {
+            return 0;
+        }
+        
+        return (items?.count)!
     
     }
     
     func tableView( tableView: UITableView,
                      numberOfRowsInSection section: Int) -> Int{
         
-        print("tableView( tableView: UITableView,numberOfRowsInSection section: Int) -> Int called")
+        NSLog("tableView( tableView: UITableView,numberOfRowsInSection section: Int) -> Int called")
         
         return 1
     }
@@ -111,7 +129,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
                                                  atIndex index: Int) -> Int
     {
         
-        print("tableView(_tableView: UITableView,sectionForSectionIndexTitle title: String,atIndex index: Int) ")
+        NSLog("tableView(_tableView: UITableView,sectionForSectionIndexTitle title: String,atIndex index: Int) ")
         
         return 1;
     
@@ -120,7 +138,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
                      estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat{
         
         
-        print("tableView(_tableView: UITableView,estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) ")
+        NSLog("tableView(_tableView: UITableView,estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) ")
         
         
         return 44;
@@ -131,8 +149,43 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
                      cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell{
         
         let cell = tableView!.dequeueReusableCellWithIdentifier("cell",forIndexPath: indexPath) as! LineItemCell
-        cell.dynamicLabel.text = "hello\(indexPath.row)-\(indexPath.section)"
-        print("cell text\(cell.dynamicLabel.text)")
+        
+        
+        if items == nil {
+            return cell //just empty cell when null
+        }
+        
+        NSLog("current sec \(indexPath.section) and current row\(indexPath.row)")
+        //cell.dynamicLabel.text = "hello\(indexPath.row)-\(indexPath.section)"
+        if indexPath.section < items?.count {
+            let lineItem = items![indexPath.section]
+            if let skuId = lineItem["skuId"] as? String {
+                print("with line item json: ", skuId);
+                if let quantity = lineItem["quantity"] as? Int {
+                    // the tyoe can not be automatiically transfer, it must match the original ones.
+                    //NSLog("with line item quantity: ", quantity);
+                    
+                    
+                    if let skuName = lineItem["skuName"] as? String {
+                        cell.dynamicLabel.text = "\(skuId)|\(skuName)|\(quantity) "
+                    }
+                    
+                    //NSLog("id and quantity = %@   %d",skuId,quantity)
+                }
+            }
+            
+           
+            
+            //cell.dynamicLabel.text = "hello\(indexPath.row)-\(indexPath.section)"
+            
+        
+        }else{
+        
+             //cell.dynamicLabel.text = "hello\(indexPath.row)-\(indexPath.section)"
+        }
+        
+        
+        //print("cell text\(cell.dynamicLabel.text)")
         //cell?.textLabel = "love is blue"
         return cell;
         
@@ -157,6 +210,12 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
 
 }
 /*
+ 
+ 
+ curl 'http://localhost:8080/naf/service/loadOne/' -H 'Accept: text/json'
+
+
+
  - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
  {
  //Get reference to receipt
