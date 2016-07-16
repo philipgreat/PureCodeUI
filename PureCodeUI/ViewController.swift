@@ -12,10 +12,9 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
 
     var tableView:UITableView?
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-        
+    
+    internal func addTable()
+    {
         view.backgroundColor = .yellowColor()
         
         
@@ -26,10 +25,74 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         tableView!.registerClass(LineItemCell.self, forCellReuseIdentifier: "cell")
         self.view.addSubview(self.tableView!)
         
+
+    
+    }
+    internal func reloadDate(){
+    
+        
+        
+        let requestURL: NSURL = NSURL(string: "http://www.learnswiftonline.com/Samples/subway.json")!
+        let urlRequest: NSMutableURLRequest = NSMutableURLRequest(URL: requestURL)
+        let session = NSURLSession.sharedSession()
+        let task = session.dataTaskWithRequest(urlRequest) {
+            (data, response, error) -> Void in
+            
+            let httpResponse = response as! NSHTTPURLResponse
+            let statusCode = httpResponse.statusCode
+            
+            if (statusCode == 200) {
+                print("Everyone is fine, file downloaded successfully.")
+            }
+            
+            
+            if (statusCode == 200) {
+                
+                do{
+                    
+                    let json = try NSJSONSerialization.JSONObjectWithData(data!, options:.AllowFragments)
+                    
+                    if let stations = json["stations"] as? [[String: AnyObject]] {
+                        
+                        for station in stations {
+                            
+                            if let name = station["stationName"] as? String {
+                                
+                                if let year = station["buildYear"] as? String {
+                                    print("name and year = ",name,year)
+                                }
+                                
+                            }
+                        }
+                        
+                    }
+                    
+                }catch {
+                    print("Error with Json: \(error)")
+                }
+                
+            }
+            
+        }
+        
+        task.resume()
+
+    }
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Do any additional setup after loading the view, typically from a nib.
+        
+        addTable()
+        reloadDate()
+        
+        
         
     }
     
      func numberOfSectionsInTableView(_tableView: UITableView) -> Int{
+        
+        
+        print("numberOfSectionsInTableView called")
         
         return 20
     
@@ -37,6 +100,9 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
     
     func tableView( tableView: UITableView,
                      numberOfRowsInSection section: Int) -> Int{
+        
+        print("tableView( tableView: UITableView,numberOfRowsInSection section: Int) -> Int called")
+        
         return 1
     }
     
@@ -44,16 +110,24 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
                      sectionForSectionIndexTitle title: String,
                                                  atIndex index: Int) -> Int
     {
+        
+        print("tableView(_tableView: UITableView,sectionForSectionIndexTitle title: String,atIndex index: Int) ")
+        
         return 1;
     
     }
-    func tableView(_tableView: UITableView,
+     func tableView(_tableView: UITableView,
                      estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat{
+        
+        
+        print("tableView(_tableView: UITableView,estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) ")
+        
+        
         return 44;
         
     }
     
-    func tableView(_tableView: UITableView,
+     func tableView(_tableView: UITableView,
                      cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell{
         
         let cell = tableView!.dequeueReusableCellWithIdentifier("cell",forIndexPath: indexPath) as! LineItemCell
@@ -61,6 +135,16 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         print("cell text\(cell.dynamicLabel.text)")
         //cell?.textLabel = "love is blue"
         return cell;
+        
+        
+    }
+    func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
+        print("selected\(indexPath.row)-\(indexPath.section)")
+        
+        
+        let detailController = DetailViewController();
+        detailController.title = "Item Detail"
+        self.navigationController?.pushViewController(detailController, animated: true)
         
         
     }
@@ -72,4 +156,15 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
 
 
 }
-
+/*
+ - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+ {
+ //Get reference to receipt
+ Receipt *receipt = [self.receiptsArray objectAtIndex:indexPath.row];
+ 
+ ReceiptDetailViewController *controller = [[ReceiptDetailViewController alloc] initWithNibName:@"ReceiptDetailViewController" bundle:nil];
+ 
+ // Pass data to controller
+ controller.receipt = receipt;
+ [self.navigationController pushViewController:controller animated:YES];
+ }*/

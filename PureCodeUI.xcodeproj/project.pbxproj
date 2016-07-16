@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D41B78371D3A72F000068FAF /* MoreDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D41B78361D3A72F000068FAF /* MoreDetailViewController.swift */; };
 		D48341771D393CC2007A7F59 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D48341761D393CC2007A7F59 /* AppDelegate.swift */; };
 		D48341791D393CC2007A7F59 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D48341781D393CC2007A7F59 /* ViewController.swift */; };
 		D483417E1D393CC2007A7F59 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D483417D1D393CC2007A7F59 /* Assets.xcassets */; };
@@ -15,6 +16,7 @@
 		D48341A51D3942AF007A7F59 /* SecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D48341A41D3942AF007A7F59 /* SecondViewController.swift */; };
 		D48341A71D394400007A7F59 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D48341A61D394400007A7F59 /* Launch Screen.storyboard */; };
 		D48341A91D394DF7007A7F59 /* LineItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D48341A81D394DF7007A7F59 /* LineItemCell.swift */; };
+		D48341AB1D39CFC8007A7F59 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D48341AA1D39CFC8007A7F59 /* DetailViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,6 +37,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D41B78361D3A72F000068FAF /* MoreDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoreDetailViewController.swift; sourceTree = "<group>"; };
 		D48341731D393CC2007A7F59 /* PureCodeUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PureCodeUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D48341761D393CC2007A7F59 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D48341781D393CC2007A7F59 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -49,6 +52,7 @@
 		D48341A41D3942AF007A7F59 /* SecondViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecondViewController.swift; sourceTree = "<group>"; };
 		D48341A61D394400007A7F59 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		D48341A81D394DF7007A7F59 /* LineItemCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineItemCell.swift; sourceTree = "<group>"; };
+		D48341AA1D39CFC8007A7F59 /* DetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,6 +110,8 @@
 				D48341821D393CC2007A7F59 /* Info.plist */,
 				D48341A41D3942AF007A7F59 /* SecondViewController.swift */,
 				D48341A81D394DF7007A7F59 /* LineItemCell.swift */,
+				D48341AA1D39CFC8007A7F59 /* DetailViewController.swift */,
+				D41B78361D3A72F000068FAF /* MoreDetailViewController.swift */,
 			);
 			path = PureCodeUI;
 			sourceTree = "<group>";
@@ -259,8 +265,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D41B78371D3A72F000068FAF /* MoreDetailViewController.swift in Sources */,
 				D48341A91D394DF7007A7F59 /* LineItemCell.swift in Sources */,
 				D48341A51D3942AF007A7F59 /* SecondViewController.swift in Sources */,
+				D48341AB1D39CFC8007A7F59 /* DetailViewController.swift in Sources */,
 				D48341791D393CC2007A7F59 /* ViewController.swift in Sources */,
 				D48341771D393CC2007A7F59 /* AppDelegate.swift in Sources */,
 			);
@@ -478,6 +486,7 @@
 				D483419D1D393CC2007A7F59 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		D483419E1D393CC2007A7F59 /* Build configuration list for PBXNativeTarget "PureCodeUITests" */ = {
 			isa = XCConfigurationList;
@@ -486,6 +495,7 @@
 				D48341A01D393CC2007A7F59 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		D48341A11D393CC2007A7F59 /* Build configuration list for PBXNativeTarget "PureCodeUIUITests" */ = {
 			isa = XCConfigurationList;
@@ -494,6 +504,7 @@
 				D48341A31D393CC2007A7F59 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

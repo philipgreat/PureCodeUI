@@ -21,14 +21,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
         
         let nav1 = UINavigationController()
+        nav1.title = "Home"
         let first = ViewController(nibName: nil, bundle: nil)
+        first.title = "Home1"
         nav1.viewControllers = [first]
-        nav1.title = "HOME"
+        nav1.title = "Home"
         //nav1.tabBarItem.image=UIImage(named: String)
         
         let second = SecondViewController(nibName: nil, bundle: nil)
+        
+        
+        second.title = "Just Navi"
+        
         let nav2 = UINavigationController()
-        nav2.title = "CATE"
+        nav2.title = "Category"
         nav2.viewControllers = [second]
         
         let tabs = UITabBarController()
