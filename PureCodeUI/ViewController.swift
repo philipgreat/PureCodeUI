@@ -55,9 +55,26 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         reloadData()
     }
     
+    // Override to support editing the table view.
+    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        if editingStyle == .Delete {
+            // Delete the row from the data source
+            //            meals.removeAtIndex(indexPath.row)
+            //            saveMeals()
+            //tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+            
+            return
+            
+        }
+        
+        if editingStyle == .Insert {
+            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+        }
+    }
+    
     internal func reloadData(){
     
-        let url = "http://127.0.0.1:8080/naf/orderManager/loadOrderDetail/O000009/"
+        let url = "http://192.168.1.206:8080/naf/orderManager/loadOrderDetail/O000009/"
         NSLog("Trying to make a url call")
         
         let requestURL: NSURL = NSURL(string: url )!
