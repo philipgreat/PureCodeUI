@@ -13,6 +13,9 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
     var tableView:UITableView?
     var items:[[String: AnyObject]]?
     
+    var refreshControl: UIRefreshControl!
+    
+    
     internal func addTable()
     {
         view.backgroundColor = .yellowColor()
@@ -25,29 +28,62 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         tableView!.registerClass(LineItemCell.self, forCellReuseIdentifier: "cell")
         self.view.addSubview(self.tableView!)
         
-
+        refreshControl = UIRefreshControl()
+        
+        refreshControl.backgroundColor = UIColor.redColor()
+        refreshControl.tintColor = UIColor.yellowColor()
+        
+        refreshControl.addTarget(self, action: #selector(ViewController.handleRefresh(_:)), forControlEvents: UIControlEvents.ValueChanged)
+    
+        
+        tableView?.addSubview(refreshControl)
+        
     
     }
-    internal func reloadDate(){
+    /*
+     
+     
+     curl 'http://localhost:8080/naf/orderManager/loadOrderDetail/O000009/'
+     '
+     */
     
+    func handleRefresh(refreshControl: UIRefreshControl) {
+        // Do some reloading of data and update the table view's data source
+        // Fetch more objects from a web service, for example...
         
+        // Simply adding an object to the data source for this example
+        reloadData()
+    }
+    
+    internal func reloadData(){
+    
+        let url = "http://127.0.0.1:8080/naf/orderManager/loadOrderDetail/O000009/"
+        NSLog("Trying to make a url call")
         
-        let requestURL: NSURL = NSURL(string: "http://localhost:8080/naf/service/loadOne/")!
+        let requestURL: NSURL = NSURL(string: url )!
         let urlRequest: NSMutableURLRequest = NSMutableURLRequest(URL: requestURL)
         urlRequest.addValue("text/json", forHTTPHeaderField: "Accept")
         let session = NSURLSession.sharedSession()
         let task = session.dataTaskWithRequest(urlRequest) {
             (data, response, error) -> Void in
             
+            if ((error) != nil) {
+                print("dataTaskWithRequest error: \(error)");
+                return;
+            }
+            
+            
+            
             let httpResponse = response as! NSHTTPURLResponse
             let statusCode = httpResponse.statusCode
             
-            if (statusCode == 200) {
-                print("Everyone is fine, file downloaded successfully. with data \(data)")
+            if (statusCode != 200) {
+                print("Everyone is not fine, file downloaded fail. with data \(statusCode)")
             }
             
             
             if (statusCode == 200) {
+                print("Everyone is not fine, file downloaded fail. with data \(data)")
                 
                 do{
                     
@@ -82,6 +118,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 //must be  in UI thread to load the data, otherwise, some time not working before click some cell
                 self.tableView?.reloadData()
+                self.refreshControl.endRefreshing()
             })
             //self.tableView?.reloadData()
             //NSLog("trying to reload the data")
@@ -95,7 +132,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         // Do any additional setup after loading the view, typically from a nib.
         
         addTable()
-        reloadDate()
+        reloadData()
         
         
         

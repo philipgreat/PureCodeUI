@@ -21,11 +21,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
         
         let nav1 = UINavigationController()
-        nav1.title = "Home"
+        nav1.title = "Home" //show it under the menu bar at the bottom of the device
         let first = ViewController(nibName: nil, bundle: nil)
-        first.title = "Home1"
+        first.title = "Home"
         nav1.viewControllers = [first]
-        nav1.title = "Home"
+        
         //nav1.tabBarItem.image=UIImage(named: String)
         
         let second = SecondViewController(nibName: nil, bundle: nil)
