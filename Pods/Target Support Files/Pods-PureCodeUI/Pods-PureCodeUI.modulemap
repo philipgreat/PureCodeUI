@@ -1,6 +1,0 @@
-framework module Pods_PureCodeUI {
-  umbrella header "Pods-PureCodeUI-umbrella.h"
-
-  export *
-  module * { export * }
-}
