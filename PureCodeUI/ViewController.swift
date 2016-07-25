@@ -8,6 +8,58 @@
 
 import UIKit
 
+import Alamofire
+import SwiftyJSON
+
+
+
+class RemoteService
+
+{
+    
+
+    init()
+    {
+        //super.init()
+    }
+    func request(){
+       
+        
+//        let headers = [
+//            "Authorization": "Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==",
+//            "Content-Type": "application/x-www-form-urlencoded",
+//            "Accept": "applicaton/json",
+//            
+//        ]
+//        
+                let headers = [
+                    "Accept": "applicaton/json",
+        
+                ]
+                
+
+        
+        let url="http://192.168.1.206:8080/naf/orderManager/loadOrderDetail/O000009/"
+        Alamofire.request(.GET, url, headers: headers).validate().responseJSON { response in
+            switch response.result {
+            case .Success:
+                if let value = response.result.value {
+                    let json = JSON(value)
+                    print("JSON: \(json)")
+                }
+            case .Failure(let error):
+                print(error)
+            }
+        }
+    
+    }
+
+}
+
+
+
+
+
 class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate {
 
     var tableView:UITableView?
@@ -37,6 +89,10 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
     
         
         tableView?.addSubview(refreshControl)
+        
+        
+      
+        
         
     
     }
@@ -75,6 +131,8 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
     internal func reloadData(){
     
         let url = "http://192.168.1.206:8080/naf/orderManager/loadOrderDetail/O000009/"
+        //let url = "http://172.20.10.9:8080/naf/orderManager/loadOrderDetail/O000009/"
+        
         NSLog("Trying to make a url call")
         
         let requestURL: NSURL = NSURL(string: url )!
@@ -100,7 +158,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
             
             
             if (statusCode == 200) {
-                print("Everyone is not fine, file downloaded fail. with data \(data)")
+                print("Everyone is  fine, file downloaded success. with data \(data)")
                 
                 do{
                     
@@ -108,21 +166,8 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
                     //print("with json: ", json)
                     if let lineItemList = json["lineItemList"] as? [[String: AnyObject]] {
                        
-                        
-                        self.items = lineItemList
-                        
-                        for lineItem in lineItemList {
-                            
-                            if let skuId = lineItem["skuId"] as? String {
-                                 print("with line item json: ", skuId);
-                                if let quantity = lineItem["quantity"] as? Int {
-                                    // the tyoe can not be automatiically transfer, it must match the original ones.
-                                    //NSLog("with line item quantity: ", quantity);
-                                    NSLog("id and quantity = %@   %d",skuId,quantity)
-                                }
-                                
-                            }
-                        }
+                        self.updateViewWithNewItems(lineItemList)
+                       
                         
                     }
                     
@@ -132,11 +177,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
                 //self.
                 
             }
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                //must be  in UI thread to load the data, otherwise, some time not working before click some cell
-                self.tableView?.reloadData()
-                self.refreshControl.endRefreshing()
-            })
+            
             //self.tableView?.reloadData()
             //NSLog("trying to reload the data")
         }
@@ -144,6 +185,20 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         task.resume()
 
     }
+    
+    
+    func updateViewWithNewItems(lineItemList: AnyObject)
+    {
+        self.items = lineItemList as? [[String : AnyObject]]
+        
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            //must be  in UI thread to load the data, otherwise, some time not working before click some cell
+            self.tableView?.reloadData()
+            self.refreshControl.endRefreshing()
+        })
+    
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -151,7 +206,9 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         addTable()
         reloadData()
         
+        let removeService = RemoteService()
         
+        removeService.request()
         
     }
     
@@ -214,7 +271,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         if indexPath.section < items?.count {
             let lineItem = items![indexPath.section]
             if let skuId = lineItem["skuId"] as? String {
-                print("with line item json: ", skuId);
+                print("with line item json: ", skuId)
                 if let quantity = lineItem["quantity"] as? Int {
                     // the tyoe can not be automatiically transfer, it must match the original ones.
                     //NSLog("with line item quantity: ", quantity);
@@ -263,6 +320,13 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
 
 
 }
+
+
+
+
+
+
+
 /*
  
  
