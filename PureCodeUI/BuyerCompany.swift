@@ -7,21 +7,87 @@
 //
 
 import Foundation
-
+import ObjectMapper
 
 class CostCenter{
     
 }
 
-class CreditAccount{
+struct LineItem: CustomStringConvertible{
+    
+    var	id                  :	String?
+    var	bizOrder            :	Order?
+    var	skuId               :	String?
+    var	skuName             :	String?
+    var	amount              :	Double?
+    var	quantity            :	Int?
+    var	active              :	Bool?
+    var	version             :	Int?
+    
+    
+    
+    
+    
+    
+    init(){
+        //lazy load for all the properties
+        //This is good for UI applications as it might saves RAM which is very expensive in mobile devices
+        
+    }
+    
+    //Confirming to the protocol Mappable of ObjectMapper
+    //Reference on https://github.com/Hearst-DD/ObjectMapper/
+    
+    init?(_ map: Map){
+        
+    }
+    
+    
+    
+    
+    //Confirming to the protocol CustomStringConvertible of Foundation
+    var description: String{
+        //Need to find out a way to improve this method performance as this method might called to
+        //debug or log, using + is faster than \(var).
+        
+        var result = "line_item{";
+        result += "\tid='\(id)';"
+        //result += "\tbiz_order='order("+getBizOrder().getId()+")';"
+        result += "\tsku_id='\(skuId)';"
+        result += "\tsku_name='\(skuName)';"
+        result += "\tamount='\(amount)';"
+        result += "\tquantity='\(quantity)';"
+        result += "\tactive='\(active)';"
+        result += "\tversion='\(version)';"
+        result += "}";
+        
+        return result
+    }
+    
+    static var 	CLASS_VERSION = "1" 
+    //This value is for serializer like message pack to identify the versions match between
+    //local and remote object.
     
 }
+
+
 
 class BillingAddress{
     
 }
 
-class Order{
+struct Order{
+    var title: String?
+    var	lineItemList        :	[LineItem]?
+    
+}
+
+extension Order: CustomStringConvertible{
+
+    var description: String{
+        let result = "Order with title: " + title!
+        return result
+    }
     
 }
 

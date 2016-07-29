@@ -132,6 +132,7 @@
 		D48341751D393CC2007A7F59 /* PureCodeUI */ = {
 			isa = PBXGroup;
 			children = (
+				D49AB7921D4A610F006E914F /* Order */,
 				D48341761D393CC2007A7F59 /* AppDelegate.swift */,
 				D48341A61D394400007A7F59 /* Launch Screen.storyboard */,
 				D48341781D393CC2007A7F59 /* ViewController.swift */,
@@ -141,7 +142,6 @@
 				D48341A81D394DF7007A7F59 /* LineItemCell.swift */,
 				D48341AA1D39CFC8007A7F59 /* DetailViewController.swift */,
 				D41B78361D3A72F000068FAF /* MoreDetailViewController.swift */,
-				D4A7D1D11D451DDF00D94BF5 /* BuyerCompany.swift */,
 			);
 			path = PureCodeUI;
 			sourceTree = "<group>";
@@ -162,6 +162,14 @@
 				D48341981D393CC2007A7F59 /* Info.plist */,
 			);
 			path = PureCodeUIUITests;
+			sourceTree = "<group>";
+		};
+		D49AB7921D4A610F006E914F /* Order */ = {
+			isa = PBXGroup;
+			children = (
+				D4A7D1D11D451DDF00D94BF5 /* BuyerCompany.swift */,
+			);
+			name = Order;
 			sourceTree = "<group>";
 		};
 		D9042127FF9DD4E1EBBEC7A6 /* Pods */ = {

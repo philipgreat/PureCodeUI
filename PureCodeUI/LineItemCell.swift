@@ -16,7 +16,12 @@ class LineItemCell: UITableViewCell {
     var  dynamicLabel : UILabel!
     
     
-    
+    func log(message:String)
+    {
+        if true {return}
+        NSLog(message)
+        
+    }
     
     
     required init?(coder aDecoder: NSCoder) {
@@ -32,7 +37,7 @@ class LineItemCell: UITableViewCell {
         //dynamicLabel!.font = //set font here
         
         addSubview(dynamicLabel)
-        NSLog("method called")
+        //log("method called")
     }
     
     override func awakeFromNib() {

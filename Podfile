@@ -8,7 +8,7 @@ target 'PureCodeUI' do
   # Pods for PureCodeUI
 
   pod 'SwiftyJSON'
-
+  pod 'ObjectMapper'
   pod 'Alamofire', '~> 3.4'
   target 'PureCodeUITests' do
     inherit! :search_paths

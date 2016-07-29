@@ -10,49 +10,253 @@ import UIKit
 
 import Alamofire
 import SwiftyJSON
+import ObjectMapper
 
 
 
-class RemoteService
+
+struct CreditAccount: CustomStringConvertible, Mappable{
+    
+    var	id                  :	String?
+    var	name                :	String?
+
+    var	authorized          :	Double?
+    var	remain              :	Double?
+    var	version             :	Int?
+    
+    
+    init?(_ map: Map){
+    
+    }
+    
+    init(){
+        //lazy load for all the properties
+        //This is good for UI applications as it might saves RAM which is very expensive in mobile devices
+        
+    }
+    
+    //Confirming to the protocol Mappable of ObjectMapper
+    //Reference on https://github.com/Hearst-DD/ObjectMapper/
+    mutating func mapping(map: Map) {
+        //Map each field to json fields
+        id                  	<- map["id"]
+        name                	<- map["name"]
+        authorized          	<- map["authorized"]
+        remain              	<- map["remain"]
+        version             	<- map["version"]
+        
+        
+    }//end func mapping(map: Map)
+    
+    
+    
+    //Confirming to the protocol CustomStringConvertible of Foundation
+    var description: String{
+        //Need to find out a way to improve this method performance as this method might called to
+        //debug or log, using + is faster than \(var).
+        
+        var result = "credit_account{";
+        result += "\tid='\(id)';"
+        result += "\tname='\(name)';"
+     
+        result += "\tauthorized='\(authorized)';"
+        result += "\tremain='\(remain)';"
+        result += "\tversion='\(version)';"
+        result += "}";
+        
+        return result
+    }
+    
+    static var 	CLASS_VERSION = "1" 
+    //This value is for serializer like message pack to identify the versions match between
+    //local and remote object.
+    
+}
+
+
+class EmployeeRemoteManagerImpl: CustomStringConvertible{
+    
+    let remoteURLPrefix = "http://127.0.0.1:8080/naf/employeeManager/"
+    internal func compositeCallURL(methodName: String, parameters:[String]) -> String
+    {
+        var resultURL = remoteURLPrefix
+        /* This will be available in Swift 3.0
+         resultURL.append(methodName)
+         resultURL.append("/")
+         */
+        resultURL += methodName
+        resultURL += "/"
+        
+        for parameter in parameters{
+            /*	This will be available in Swift 3.0
+             resultURL.append(parameter)
+             resultURL.append("/")
+             */
+            resultURL += parameter
+            resultURL += "/"
+            
+        }
+        return resultURL
+        
+    }
+    
+    
+    
+    
+    
+    internal func compositeCallURL(methodName: String) -> String
+    {
+        //Simple method, do not need to call compositeCallURL(methodName: String, parameters:[String]) -> String
+        var resultURL = remoteURLPrefix
+        /*	This will be available in Swift 3.0
+         resultURL.append(methodName)
+         resultURL.append("/")
+         */
+        resultURL += methodName
+        resultURL += "/"
+        return resultURL
+        
+    }
+    
+    
+    init(){
+        //lazy load for all the properties
+        //This is good for UI applications as it might saves RAM which is very expensive in mobile devices
+        
+    }
+    
+    
+    
+    
+    //Confirming to the protocol CustomStringConvertible of Foundation
+    var description: String{
+        //Need to find out a way to improve this method performance as this method might called to
+        //debug or log, using + is faster than \(var).
+        let result = "EmployeeRemoteManagerImpl, V1"
+        return result
+    }
+    static var 	CLASS_VERSION = 1
+    //This value is for serializer like message pack to identify the versions match between
+    //local and remote object.
+    
+    
+}
+
+
+class OrderRemoteService
 
 {
     
 
+    
+    let remoteURLPrefix = "http://127.0.0.1:8080/naf/orderManager/"
+    internal func compositeCallURL(methodName: String, parameters:[String]) -> String
+    {
+        var resultURL = remoteURLPrefix
+        /* This will be available in Swift 3.0
+         resultURL.append(methodName)
+         resultURL.append("/")
+         */
+        resultURL += methodName
+        resultURL += "/"
+        
+        
+        
+        for parameter in parameters{
+            /*	This will be available in Swift 3.0
+             resultURL.append(parameter)
+             resultURL.append("/")
+             */
+            resultURL += parameter
+            resultURL += "/"
+            
+        }
+        return resultURL
+        
+    }
+    
     init()
     {
         //super.init()
     }
-    func request(){
-       
+    func loadOrderDetail(orderId:String, orderSuccessAction: (Order)->String, orderErrorAction: (String)->String){
+    
+        let methodName = "loadOrderDetail"
+        let parameters = [orderId]
         
-//        let headers = [
-//            "Authorization": "Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==",
-//            "Content-Type": "application/x-www-form-urlencoded",
-//            "Accept": "applicaton/json",
-//            
-//        ]
-//        
-                let headers = [
-                    "Accept": "applicaton/json",
-        
-                ]
-                
 
-        
-        let url="http://192.168.1.206:8080/naf/orderManager/loadOrderDetail/O000009/"
-        Alamofire.request(.GET, url, headers: headers).validate().responseJSON { response in
+        let url = compositeCallURL(methodName, parameters: parameters)
+        Alamofire.request(.GET, url).validate().responseJSON { response in
             switch response.result {
             case .Success:
                 if let value = response.result.value {
                     let json = JSON(value)
-                    print("JSON: \(json)")
+                    let order = self.extractOrderFromJSON(json)
+                    orderSuccessAction(order)
                 }
+                
             case .Failure(let error):
                 print(error)
+                orderErrorAction("\(error)")
             }
         }
     
     }
+    //Reference http://stackoverflow.com/questions/28365939/how-to-loop-through-json-with-swiftyjson
+    
+    func extractOrderFromJSON(json:JSON) -> Order{
+        var order = Order()
+        
+        order.title = json["title"].string
+        //order.lineItemList = json["lineItemList"].array
+        order.lineItemList = [LineItem]()
+        if let lineItemList = json["lineItemList"].array {
+            for element in lineItemList {
+                var lineItem = LineItem()
+                if let id = element["id"].string {
+                    lineItem.id = id
+                }
+                if let skuId = element["skuId"].string {
+                    lineItem.skuId = skuId
+                }
+                if let skuName = element["skuName"].string {
+                    lineItem.skuName = skuName
+                }
+                if let amount = element["amount"].double {
+                    lineItem.amount = amount
+                }
+                if let quantity = element["quantity"].int {
+                    lineItem.quantity = quantity
+                }
+                if let version = element["version"].int {
+                    lineItem.version = version
+                }
+                order.lineItemList?.append(lineItem)
+                
+                
+            }
+
+            
+        }
+        
+        
+        //order.lineItemList.
+        
+        
+        return order
+    
+    }
+    
+    
+    
+    
+    func viewJson(json: JSON)
+    {
+        print("JSON: \(json["profitCenter"] )")
+
+        
+    }
+    
 
 }
 
@@ -63,7 +267,7 @@ class RemoteService
 class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate {
 
     var tableView:UITableView?
-    var items:[[String: AnyObject]]?
+    var order:Order?
     
     var refreshControl: UIRefreshControl!
     
@@ -127,77 +331,27 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }
     }
-    
-    internal func reloadData(){
-    
-        let url = "http://192.168.1.206:8080/naf/orderManager/loadOrderDetail/O000009/"
-        //let url = "http://172.20.10.9:8080/naf/orderManager/loadOrderDetail/O000009/"
-        
-        NSLog("Trying to make a url call")
-        
-        let requestURL: NSURL = NSURL(string: url )!
-        let urlRequest: NSMutableURLRequest = NSMutableURLRequest(URL: requestURL)
-        urlRequest.addValue("text/json", forHTTPHeaderField: "Accept")
-        let session = NSURLSession.sharedSession()
-        let task = session.dataTaskWithRequest(urlRequest) {
-            (data, response, error) -> Void in
+    func log(message:String)
+    {
+        if false {
+            NSLog(message)
             
-            if ((error) != nil) {
-                print("dataTaskWithRequest error: \(error)");
-                return;
-            }
-            
-            
-            
-            let httpResponse = response as! NSHTTPURLResponse
-            let statusCode = httpResponse.statusCode
-            
-            if (statusCode != 200) {
-                print("Everyone is not fine, file downloaded fail. with data \(statusCode)")
-            }
-            
-            
-            if (statusCode == 200) {
-                print("Everyone is  fine, file downloaded success. with data \(data)")
-                
-                do{
-                    
-                    let json = try NSJSONSerialization.JSONObjectWithData(data!, options:.AllowFragments)
-                    //print("with json: ", json)
-                    if let lineItemList = json["lineItemList"] as? [[String: AnyObject]] {
-                       
-                        self.updateViewWithNewItems(lineItemList)
-                       
-                        
-                    }
-                    
-                }catch {
-                    NSLog("Error with Json: \(error)")
-                }
-                //self.
-                
-            }
-            
-            //self.tableView?.reloadData()
-            //NSLog("trying to reload the data")
         }
         
-        task.resume()
+    }
+    internal func reloadData(){
+    
+        let removeService = OrderRemoteService()
+        
+        //removeService.loadOrderDetail("O000001")
+        
+        removeService.loadOrderDetail("O000009",orderSuccessAction: doOrderSuccess, orderErrorAction: doOrderError)
+        
 
     }
     
     
-    func updateViewWithNewItems(lineItemList: AnyObject)
-    {
-        self.items = lineItemList as? [[String : AnyObject]]
-        
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            //must be  in UI thread to load the data, otherwise, some time not working before click some cell
-            self.tableView?.reloadData()
-            self.refreshControl.endRefreshing()
-        })
-    
-    }
+   
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -206,31 +360,68 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         addTable()
         reloadData()
         
-        let removeService = RemoteService()
         
-        removeService.request()
+        
+    }
+    
+    func doOrderSuccess(order:Order) -> String
+    {
+        
+        let message = "Do order right: \(order)";
+        
+        self.order = order
+        
+        
+        print(order.title)
+        
+        for lineItem in order.lineItemList!{
+            print(lineItem)
+            
+        }
+        
+        
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            //must be  in UI thread to load the data, otherwise, some time not working before click some cell
+            self.tableView?.reloadData()
+            self.refreshControl.endRefreshing()
+        })
+        
+        
+        return message
+    
+    }
+    func doOrderError(error:String) -> String
+    {
+        
+        let result = "Do order wrong: " + error
+        
+        print(result)
+        
+        return result
+        
+        
         
     }
     
      func numberOfSectionsInTableView(_tableView: UITableView) -> Int{
         
         
-        NSLog("numberOfSectionsInTableView called")
+        log("numberOfSectionsInTableView called")
         
         //NSLog( "calling: %s", __PRETTY_FUNCTION__ );
         
-        if items == nil {
+        if order == nil {
             return 0;
         }
         
-        return (items?.count)!
+        return (order?.lineItemList?.count)!
     
     }
     
     func tableView( tableView: UITableView,
                      numberOfRowsInSection section: Int) -> Int{
         
-        NSLog("tableView( tableView: UITableView,numberOfRowsInSection section: Int) -> Int called")
+        log("tableView( tableView: UITableView,numberOfRowsInSection section: Int) -> Int called")
         
         return 1
     }
@@ -240,7 +431,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
                                                  atIndex index: Int) -> Int
     {
         
-        NSLog("tableView(_tableView: UITableView,sectionForSectionIndexTitle title: String,atIndex index: Int) ")
+        log("tableView(_tableView: UITableView,sectionForSectionIndexTitle title: String,atIndex index: Int) ")
         
         return 1;
     
@@ -249,7 +440,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
                      estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat{
         
         
-        NSLog("tableView(_tableView: UITableView,estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) ")
+        log("tableView(_tableView: UITableView,estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) ")
         
         
         return 44;
@@ -262,29 +453,15 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         let cell = tableView!.dequeueReusableCellWithIdentifier("cell",forIndexPath: indexPath) as! LineItemCell
         
         
-        if items == nil {
+        if order == nil {
             return cell //just empty cell when null
         }
         
-        NSLog("current sec \(indexPath.section) and current row\(indexPath.row)")
+        log("current sec \(indexPath.section) and current row\(indexPath.row)")
         //cell.dynamicLabel.text = "hello\(indexPath.row)-\(indexPath.section)"
-        if indexPath.section < items?.count {
-            let lineItem = items![indexPath.section]
-            if let skuId = lineItem["skuId"] as? String {
-                print("with line item json: ", skuId)
-                if let quantity = lineItem["quantity"] as? Int {
-                    // the tyoe can not be automatiically transfer, it must match the original ones.
-                    //NSLog("with line item quantity: ", quantity);
-                    
-                    
-                    if let skuName = lineItem["skuName"] as? String {
-                        cell.dynamicLabel.text = "\(skuId)|\(skuName)|\(quantity) "
-                    }
-                    
-                    //NSLog("id and quantity = %@   %d",skuId,quantity)
-                }
-            }
-            
+        if indexPath.section < order?.lineItemList?.count {
+            let lineItem = order!.lineItemList![indexPath.section]
+            cell.dynamicLabel.text = "\(lineItem.skuId)|\(lineItem.skuName)|\(lineItem.quantity) "
            
             
             //cell.dynamicLabel.text = "hello\(indexPath.row)-\(indexPath.section)"
