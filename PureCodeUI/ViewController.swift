@@ -160,8 +160,6 @@ class OrderRemoteService
         resultURL += methodName
         resultURL += "/"
         
-        
-        
         for parameter in parameters{
             /*	This will be available in Swift 3.0
              resultURL.append(parameter)
@@ -461,7 +459,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         //cell.dynamicLabel.text = "hello\(indexPath.row)-\(indexPath.section)"
         if indexPath.section < order?.lineItemList?.count {
             let lineItem = order!.lineItemList![indexPath.section]
-            cell.dynamicLabel.text = "\(lineItem.skuId)|\(lineItem.skuName)|\(lineItem.quantity) "
+            cell.dynamicLabel.text = "\(lineItem.skuId!)|\(lineItem.skuName!)|\(lineItem.quantity!) "
            
             
             //cell.dynamicLabel.text = "hello\(indexPath.row)-\(indexPath.section)"
