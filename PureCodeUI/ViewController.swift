@@ -124,15 +124,13 @@ class EmployeeRemoteManagerImpl: CustomStringConvertible{
         //This is good for UI applications as it might saves RAM which is very expensive in mobile devices
         
     }
-    
-    
-    
+
     
     //Confirming to the protocol CustomStringConvertible of Foundation
     var description: String{
         //Need to find out a way to improve this method performance as this method might called to
         //debug or log, using + is faster than \(var).
-        let result = "EmployeeRemoteManagerImpl, V1"
+        let result = "EmployeeRemoteManagerImpl, V1. Configured with URL: " + remoteURLPrefix
         return result
     }
     static var 	CLASS_VERSION = 1
@@ -140,6 +138,85 @@ class EmployeeRemoteManagerImpl: CustomStringConvertible{
     //local and remote object.
     
     
+}
+
+
+
+class B2BJsonTool{
+
+
+    func extractLineItemFromJSON(json:JSON) -> LineItem{
+        
+        var lineItem = LineItem()
+        
+        if let id = json["id"].string {
+            lineItem.id = id
+        }
+        if let skuId = json["skuId"].string {
+            lineItem.skuId = skuId
+        }
+        if let skuName = json["skuName"].string {
+            lineItem.skuName = skuName
+        }
+        if let amount = json["amount"].double {
+            lineItem.amount = amount
+        }
+        if let quantity = json["quantity"].int {
+            lineItem.quantity = quantity
+        }
+        if let version = json["version"].int {
+            lineItem.version = version
+        }
+        if let active = json["active"].bool {
+            lineItem.active = active
+        }
+        
+        return lineItem
+        
+    }
+    
+    
+    func extractLineItemListFromJSON(json:JSON) -> [LineItem]?{
+        
+        var lineItemList = [LineItem]()
+        
+        guard let lineItemJsonList = json.array else{
+            print("there is an error here, the json is nil or it can not convert into array: \(json) !")
+            return lineItemList
+        }
+        
+        
+        for element in lineItemJsonList{
+            let lineItem = extractLineItemFromJSON(element)
+            lineItemList.append(lineItem)
+        }
+        
+        return lineItemList
+        
+    }
+    
+    
+    func extractOrderFromJSON(json:JSON) -> Order{
+        var order = Order()
+        
+        order.title = json["title"].string
+        //order.lineItemList = json["lineItemList"].array
+        
+        order.lineItemList = extractLineItemListFromJSON(json["lineItemList"])
+        return order
+    }
+    
+    func extractSellerFromJSON(json:JSON) -> Order{
+        var order = Order()
+        
+        order.title = json["title"].string
+        //order.lineItemList = json["lineItemList"].array
+        
+        order.lineItemList = extractLineItemListFromJSON(json["lineItemList"])
+        return order
+    }
+    
+
 }
 
 
@@ -177,7 +254,7 @@ class OrderRemoteService
     {
         //super.init()
     }
-    func loadOrderDetail(orderId:String, orderSuccessAction: (Order)->String, orderErrorAction: (String)->String){
+    func loadOrderDetail(orderId:String, orderSuccessAction: (Order)->String, orderErrorAction: (NSError)->String){
     
         let methodName = "loadOrderDetail"
         let parameters = [orderId]
@@ -189,64 +266,21 @@ class OrderRemoteService
             case .Success:
                 if let value = response.result.value {
                     let json = JSON(value)
-                    let order = self.extractOrderFromJSON(json)
+                    
+                    let tool = B2BJsonTool();
+                    
+                    let order = tool.extractOrderFromJSON(json)
                     orderSuccessAction(order)
                 }
                 
             case .Failure(let error):
                 print(error)
-                orderErrorAction("\(error)")
+                orderErrorAction(error)
             }
         }
     
     }
     //Reference http://stackoverflow.com/questions/28365939/how-to-loop-through-json-with-swiftyjson
-    
-    func extractOrderFromJSON(json:JSON) -> Order{
-        var order = Order()
-        
-        order.title = json["title"].string
-        //order.lineItemList = json["lineItemList"].array
-        order.lineItemList = [LineItem]()
-        if let lineItemList = json["lineItemList"].array {
-            for element in lineItemList {
-                var lineItem = LineItem()
-                if let id = element["id"].string {
-                    lineItem.id = id
-                }
-                if let skuId = element["skuId"].string {
-                    lineItem.skuId = skuId
-                }
-                if let skuName = element["skuName"].string {
-                    lineItem.skuName = skuName
-                }
-                if let amount = element["amount"].double {
-                    lineItem.amount = amount
-                }
-                if let quantity = element["quantity"].int {
-                    lineItem.quantity = quantity
-                }
-                if let version = element["version"].int {
-                    lineItem.version = version
-                }
-                order.lineItemList?.append(lineItem)
-                
-                
-            }
-
-            
-        }
-        
-        
-        //order.lineItemList.
-        
-        
-        return order
-    
-    }
-    
-    
-    
     
     func viewJson(json: JSON)
     {
@@ -291,11 +325,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
     
         
         tableView?.addSubview(refreshControl)
-        
-        
-      
-        
-        
+
     
     }
     /*
@@ -343,7 +373,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         
         //removeService.loadOrderDetail("O000001")
         
-        removeService.loadOrderDetail("O000009",orderSuccessAction: doOrderSuccess, orderErrorAction: doOrderError)
+        removeService.loadOrderDetail("O000002",orderSuccessAction: doOrderSuccess, orderErrorAction: doOrderError)
         
 
     }
@@ -388,10 +418,10 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         return message
     
     }
-    func doOrderError(error:String) -> String
+    func doOrderError(error:NSError) -> String
     {
         
-        let result = "Do order wrong: " + error
+        let result = "Do order wrong: \(error)"
         
         print(result)
         
