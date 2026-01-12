@@ -464,15 +464,24 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         return 1;
     
     }
-     func tableView(_tableView: UITableView,
+    
+    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return "Title\(section)"
+    }
+    
+    func tableView(_tableView: UITableView,
                      estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat{
         
         
         log("tableView(_tableView: UITableView,estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) ")
         
         
-        return 44;
+        return 94;
         
+    }
+    
+    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        return 94
     }
     
      func tableView(_tableView: UITableView,
@@ -489,8 +498,9 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         //cell.dynamicLabel.text = "hello\(indexPath.row)-\(indexPath.section)"
         if indexPath.section < order?.lineItemList?.count {
             let lineItem = order!.lineItemList![indexPath.section]
-            cell.dynamicLabel.text = "\(lineItem.skuId!)|\(lineItem.skuName!)|\(lineItem.quantity!) "
-           
+            cell.idLabel.text = "\(lineItem.skuId!) "
+            cell.nameLabel.text = lineItem.skuName!
+            cell.qtyLabel.text = "qty: \(lineItem.quantity!)"
             
             //cell.dynamicLabel.text = "hello\(indexPath.row)-\(indexPath.section)"
             

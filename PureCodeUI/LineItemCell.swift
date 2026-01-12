@@ -13,7 +13,14 @@ class LineItemCell: UITableViewCell {
     
     
     
-    var  dynamicLabel : UILabel!
+    var  idLabel : UILabel!
+    var  thumbImage: UIImage!
+    
+    var  nameLabel : UILabel!
+    
+    var  qtyLabel : UILabel!
+    var  amountLabel : UILabel!
+    
     
     
     func log(message:String)
@@ -32,11 +39,31 @@ class LineItemCell: UITableViewCell {
         //With code, this method will be called
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        dynamicLabel = UILabel(frame: CGRectMake(10, 10, 200, 40))
-        dynamicLabel!.textColor = UIColor.blackColor()
-        //dynamicLabel!.font = //set font here
+        idLabel = UILabel(frame: CGRectMake(10, 10, 80, 40))
+        idLabel!.textColor = UIColor.brownColor()
         
-        addSubview(dynamicLabel)
+       
+        //idLabel!.font = //set font here
+        
+        addSubview(idLabel)
+        
+        
+        nameLabel = UILabel(frame: CGRectMake(100, 10, 120, 40))
+        nameLabel!.textColor = UIColor.redColor()
+        
+        addSubview(nameLabel)
+        
+        
+        qtyLabel = UILabel(frame: CGRectMake(230, 10, 60, 40))
+        qtyLabel!.textColor = UIColor.brownColor()
+        
+        
+        //idLabel!.font = //set font here
+        
+        addSubview(qtyLabel)
+        
+        
+        
         //log("method called")
     }
     
@@ -45,7 +72,7 @@ class LineItemCell: UITableViewCell {
         // Initialization code
         
        
-        //dynamicLabel.frame = CGRectMake(50, 150, 200, 21)
+        //idLabel.frame = CGRectMake(50, 150, 200, 21)
        
         
         
